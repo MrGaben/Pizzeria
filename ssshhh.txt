@@ -1,0 +1,135 @@
+class Pizza extends Etel {
+    constructor(nev, kaloriaSzam, ar = 1500) {
+      if (!nev.endsWith("pizza")) {
+        nev += " pizza";
+      }
+      super(nev, kaloriaSzam);
+      this._ar = ar;
+      this.feltetek = [];
+    }
+  
+    get ar() {
+      return this._ar;
+    }
+  
+    set ar(ertek) {
+      if (ertek < 0) {
+        this._ar = 1000;
+      } else {
+        this._ar = ertek;
+      }
+    }
+  
+    megromlik() {
+      this.fogyaszthato = false;
+      console.log("A pizza megromlott.");
+    }
+  
+    feltetetFelvesz(feltet) {
+      if (typeof feltet === "object" && "nev" in feltet && "kaloria" in feltet) {
+        if (typeof feltet.nev === "string" && typeof feltet.kaloria === "number") {
+          if (!this.feltetek.some((f) => f.nev === feltet.nev)) {
+            this.feltetek.push({ nev: feltet.nev, kaloria: feltet.kaloria });
+            this.kaloriaSzam += feltet.kaloria;
+            this.ar += 100;
+            console.log("Feltet felvetel sikeres!");
+          } else {
+            console.log("HIBA! Mar van ilyen feltet!");
+          }
+        } else {
+          console.log("HIBA! Nem megfelelo tipus!");
+        }
+      } else {
+        console.log("HIBA! Nem egy feltet!");
+      }
+    }
+  
+    info() {
+      const feltetSorozat =
+        this.feltetek.length > 0
+          ? this.feltetek.map((feltet) => feltet.nev).join(", ")
+          : "";
+      return `${this.nev} (${this.kaloriaSzam} kaloria), fogyaszthato: ${
+        this.fogyaszthato ? "igen" : "nem"
+      }, ar: ${this.ar} forint, feltetek: ${feltetSorozat}`;
+    }
+  }
+
+
+
+    /*
+  
+  
+  class Vasarlo {
+    constructor(nev, penz) {
+      this.nev = nev;
+      this.penz = penz;
+      this.rendelesek = [];
+    }
+  
+    pizzatRendel(pizza) {
+      if (!(pizza instanceof Pizza)) {
+        console.log("HIBA! Nem pizza!");
+        return;
+      }
+  
+      if (this.penz < pizza.ar) {
+        console.log("HIBA! Nincs eleg penz!");
+        return;
+      }
+  
+      if (!pizza.fogyaszthato) {
+        console.log("HIBA! Nem eheto pizza!");
+        return;
+      }
+  
+      this.penz -= pizza.ar;
+      this.rendelesek.push(pizza.nev);
+      console.log("Sikeres rendeles!");
+    }
+  
+    pizzakatListaz() {
+      if (this.rendelesek.length === 0) {
+        return "Nincs rendeles!";
+      }
+  
+      const rendelesekDarab = this.rendelesek.reduce((acc, pizza) => {
+        if (!acc[pizza]) {
+          acc[pizza] = 1;
+        } else {
+          acc[pizza]++;
+        }
+        return acc;
+      }, {});
+  
+      const rendelesSzoveg = Object.entries(rendelesekDarab)
+        .map(([pizza, darab]) => `${darab} darab ${pizza}`)
+        .join(", ");
+  
+      return rendelesSzoveg;
+    }
+  }
+  
+  // Példa az osztályok használatára
+  const etel1 = new Etel("Alma", 52);
+  const etel2 = new Etel("Csokolade", -100);
+  const etel3 = new Etel("Sargarepa", 35);
+  etel3.fogyaszthato = "nem";
+  
+  console.log(etel1.info()); // Alma (52 kaloria), fogyaszthato: igen
+  console.log(etel2.info()); // Csokolade (0 kaloria), fogyaszthato: igen
+  console.log(etel3.info()); // Sargarepa (35 kaloria), fogyaszthato: nem
+  
+  const pizza1 = new Pizza("Hawaii", 800);
+  const pizza2 = new Pizza("Dupla sajtos", 1000, 1800);
+  pizza1.feltetetFelvesz({ nev: "sonka", kaloria: 90 });
+  pizza1.feltetetFelvesz({ nev: "sonka", kaloria: 90 }); // HIBA! Mar van ilyen feltet!
+  pizza1.feltetetFelvesz({ nev: "gomba", kaloria: 40 });
+  console.log(pizza1.info()); // Hawaii pizza (1030 kaloria), fogyaszthato: igen, ar: 1900 forint, feltetek: sonka, gomba
+  
+  const vasarlo = new Vasarlo("Anna", 2000);
+  vasarlo.pizzatRendel(pizza1);
+  vasarlo.pizzatRendel(pizza2); // HIBA! Nincs eleg penz!
+  vasarlo.pizzatRendel(etel1); // HIBA! Nem pizza!
+  console.log(vasarlo.pizzakatListaz()); // 1 darab Hawaii pizza
+  */

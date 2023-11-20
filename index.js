@@ -1,15 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const registrationForm = document.getElementById("registration-form");
-    const pizzaOrderForm = document.getElementById("pizza-order-form");
-    const orderHistory = document.getElementById("order-history");
+  const registrationForm = document.getElementById("registration-form");
+  const pizzaOrderForm = document.getElementById("pizza-order-form");
+  const orderHistory = document.getElementById("order-history");
 
-    let currentCustomer = null;
-    const customers = [];
+  let currentCustomer = null;
+  const customers = [];
 
-    // Betöltjük a rendeléseket a böngésző helyi tárolásából
-    if (localStorage.getItem('rendelesek')) {
-        customers.push(JSON.parse(localStorage.getItem('rendelesek')));
-    }
+  // Load orders from JSON on page load
+  loadOrdersFromJson();
+
+  function saveOrdersToJson() {
+      // Check if there are existing orders in the file
+      let existingOrders = [];
+      if (localStorage.getItem('rendelesek')) {
+          existingOrders = JSON.parse(localStorage.getItem('rendelesek'));
+      }
+
+      // Add current orders to existing orders
+      existingOrders.push(...customers);
+
+      // Save the combined orders to the JSON file
+      const ordersJson = JSON.stringify(existingOrders);
+      const blob = new Blob([ordersJson], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "combined_orders.json";
+      a.click();
+
+      URL.revokeObjectURL(url);
+  }
 
     registrationForm.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -37,22 +58,24 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         if (!currentCustomer) {
-            console.error("HIBA! Vásárló nincs bejelentkezve.");
+            alert("HIBA! Vásárló nincs bejelentkezve.");
             return;
         }
+        
 
         const pizzaType = document.getElementById("pizza-type").value;
         const quantity = parseInt(document.getElementById("quantity").value);
-
+        
         const pizza = new Pizza(pizzaType, 800 * quantity, quantity * 1500);
 
         currentCustomer.pizzatRendel(pizza, quantity);
 
         pizzaOrderForm.reset();
-
+        saveOrdersToJson();
         // Mentjük a rendeléseket a böngésző helyi tárolásába
         localStorage.setItem('rendelesek', JSON.stringify(customers));
-
+        
+        
         displayOrderHistory();
     });
 
@@ -64,6 +87,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+function loadOrdersFromJson() {
+  // ... (your existing code)
+  /*
+  betölt 
+  split(})
+  */ 
+}
 
 
 class Etel {
@@ -109,20 +140,18 @@ class Etel {
         this.rendelesek = [];
     }
     pizzatRendel(pizza){
-
-
         if (!(typeof pizza === 'object') || !(pizza.hasOwnProperty('nev')) ||
         !(pizza.hasOwnProperty('kaloriaSzam') || !(pizza.hasOwnProperty('ar')) ||
         !(pizza.hasOwnProperty('feltetek')))){
-            console.error("HIBA! Nem pizza!");
+             ("HIBA! Nem pizza!");
             return;
         }
         if(this.penz < pizza.ar){
-            console.error("HIBA! Nincs eleg penz!");
+            alert("HIBA! Nincs eleg penz!");
             return;
         }
         if(pizza.fogyaszthato === false){
-            console.error("HIBA! Nem eheto pizza!");
+            alert("HIBA! Nem eheto pizza!");
             return;
         }
         this.penz -= pizza.ar;
@@ -131,15 +160,15 @@ class Etel {
     }
     pizzatRendel(pizza, quantity) {
         if (!(typeof pizza === 'object') || !(pizza instanceof Pizza)) {
-            console.error("HIBA! Nem pizza!");
+            alert("HIBA! Nem pizza!");
             return;
         }
         if (this.penz < pizza.ar * quantity) {
-            console.error("HIBA! Nincs eleg penz!");
+            alert("HIBA! Nincs eleg penz!");
             return;
         }
         if (!pizza.fogyaszthato) {
-            console.error("HIBA! Nem eheto pizza!");
+            alert("HIBA! Nem eheto pizza!");
             return;
         }
         this.penz -= pizza.ar * quantity;
