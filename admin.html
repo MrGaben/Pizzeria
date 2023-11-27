@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Admin</title>
+</head>
+<body>
+    <p>Rendelések beadása fájlban</p>
+    <input type="file" id="fileInput" accept=".json">
+    <div id="output"></div>
+    
+    <script>
+        // Function to handle file input
+        document.getElementById('fileInput').addEventListener('change', handleFile);
+    
+        function handleFile(event) {
+            const file = event.target.files[0];
+    
+            if (file) {
+                const reader = new FileReader();
+    
+                reader.onload = function (e) {
+                    const jsonData = e.target.result;
+                    displayData(jsonData);
+                };
+    
+                reader.readAsText(file);
+            }
+        }
+    
+        // Function to display only name and orders
+        function displayData(jsonData) {
+            // Parse JSON data
+            let data = JSON.parse(jsonData);
+            
+            // Display data
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // Clear previous content
+    
+            data.forEach((item, index) => {
+                outputDiv.innerHTML += `<p><strong>Record ${index + 1}:</strong></p>`;
+                outputDiv.innerHTML += `<p>Name: ${item.nev}</p>`;
+                
+                if (item.rendelesek.length > 0) {
+                    outputDiv.innerHTML += `<p>Orders: ${item.rendelesek.join(', ')}</p>`;
+                } else {
+                    outputDiv.innerHTML += `<p>No orders</p>`;
+                }
+    
+                outputDiv.innerHTML += '<hr>';
+            });
+        }
+    </script>
+</body>
+</html>
